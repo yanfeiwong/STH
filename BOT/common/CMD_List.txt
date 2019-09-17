@@ -1,0 +1,25 @@
+##########################CMD_List##################################
+     "shutdown",#0
+     "reboot",
+     "power off",
+     "power on",
+     "fps off",
+     "fps on",#5
+     "camera off",
+     "camera on",
+     "set max power",
+     "set power res",
+     "set fps res x",#10
+     "set fps res y",
+     "set fps x min",
+     "set fps x max",
+     "set fps y min",
+     "set fps y max",#15
+     "set camera res x",
+     "set camera res y",
+     "set camera iso",
+     "set camera fps",
+     "set camera ip",#20
+     "set camera port",
+     "set power port",
+     "set power port"
