@@ -1,18 +1,27 @@
-import rospy,os
+import rospy,os,sys
 from std_msgs.msg import String
 from socket import *
 from Start_ROS import *
-
-key="wangyan1840"
+############################Def_Para###############################
+#Bas
+key="some key here"
+Subp_Started=0
+Subp_Runing=0
+Subp_Kill=0
+#U_Rec
 host = ''
 port = 9921 
 bufsize = 1024 
 addr = (host,port)
-udpServer = socket(AF_INET,SOCK_DGRAM) 
+#U_Sed
+S_host  = '192.168.31.119'
+S_port = 9999
+S_bufsize = 1024
+r_addr = (host,port)
+
+udpServer = socket(AF_INET,SOCK_DGRAM)
+udpClient.sendto(data,addr)
 udpServer.bind(addr)
-Subp_Started=0
-Subp_Runing=0
-Subp_Kill=0
 
 class Paras(object):
     def __init__(self):
@@ -24,6 +33,7 @@ class Paras(object):
         self.PUP_running=0
         self.PUP_need_restart=0
         self.PUP_kill=0
+        self.PUP_port = 124
 ########################Para_U_FPS#################################
         self.PUF_res_X=1.0
         self.PUF_res_Y=1.2
@@ -121,14 +131,26 @@ CMD=["shutdown",#0
      "set camera ip",#20
      "set camera port",
      "set power port",
-     "set power port"
+     "set fps port"
     ]
 ##########################Bas_Func##################################
+def U_Sender(ustr,s_addr=r_addr,show_text=1):
+    try:
+        data = ustr.encode()
+        udpClient.sendto(data,s_addr)
+        if show_text==1:
+            print('send "'+ustr+' " to  '+str(s_addr))
+    except e:
+        print("Erro : U_Sender",sys.exc_info()[0])
+        raise
+
+
         
 def Bot_CC():
     Bot_Para=Paras()
-    pub = rospy.Publisher('Bot_CC',String, queue_size=10)
+    pub = rospy.Publisher('Bot_CC',String, queue_size=15)
     rospy.init_node('Bot',anonymous=True)
+    U_Sender("Control center Online")
     #rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         data,addr = udpServer.recvfrom(bufsize) 
@@ -227,6 +249,20 @@ def Bot_CC():
                 rospy.loginfo(para_str)
                 pub.publish(para_str)
                 Bot_Para.C_need_restart=0
+            elif cc==22:
+                Bot_Para.PUP_port=int(data[1])
+                Bot_Para.PUP_need_restart=1
+                para_str = "p;;"+Bot_Para.Get_Para("Power")
+                rospy.loginfo(para_str)
+                pub.publish(para_str)
+                Bot_Para.PUP_need_restart=0
+            elif cc==23:
+                Bot_Para.PUF_port=int(data[1])
+                Bot_Para.PUF_need_restart=1
+                para_str = "f;;"+Bot_Para.Get_Para("Power")
+                rospy.loginfo(para_str)
+                pub.publish(para_str)
+                Bot_Para.PUF_need_restart=0
         except:
             pass
 
@@ -237,8 +273,10 @@ if __name__ == '__main__':
         time.sleep(3)
         Bot_CC()
         roscore.terminate()
+        U_Sender("Control center OUT！")
         exit(0)
     except:
-        #rospy.ROSInterruptException
-        pass
+        U_Sender("Erro : Control center OUT！",sys.exc_info()[0])
+        raise
+    exit(0)
 
