@@ -1,4 +1,4 @@
-import subprocess,sys,argparse,rospy,os,ast
+import subprocess,sys,argparse,rospy,os,ast,time
 from socket import *
 
 parser = argparse.ArgumentParser()
@@ -14,6 +14,7 @@ BCC_PID=''
 BCC_Is_Running=0
 BCC_Res=0
 BCC_Kill=0
+BCC_P=''
 
 Camera_F="p2s_V2.py"
 Camera_PID=''
@@ -32,6 +33,7 @@ FPS_PID=''
 FPS_Is_Running=0
 FPS_Res=0
 FPS_Kill=0
+
 
 class Camera(object):
     def __init__(self):
@@ -166,15 +168,22 @@ class FPS(object):
         self.PUF_feq=60
         self.PUF_port = 126
         self.PUF_bufsize = 1024
-        self.PUF_running=0
-        self.PUF_need_restart=0
-        self.PUF_kill=0
+        self.IsRunning=0
+        self.NeedRes=0
+        self.NeedKill=0
     def Para_Update_out(self):
         global FPS_PID,FPS_Is_Running,FPS_Res,FPS_Kill
         FPS_PID=self.PID
         FPS_Is_Running=self.IsRunning
         FPS_Res=self.NeedRes
         FPS_Kill=self.NeedKill
+    def Update(self,data):
+        d=ast.literal_eval(data)
+        self.PUF_res_X=d[0]
+        self.PUF_res_Y=d[1]
+        self.PUF_port=d[11]
+        self.NeedRes=d[14]
+        self.NeedKill=d[15]
     def Start(self):
         if Power_Is_Running :
             self.Kill()
@@ -200,7 +209,29 @@ class FPS(object):
         except:
             print("Erro : Failed to kill FPS. Pid",+str(self.PID)+sys.exc_info()[0])
             raise
-        
+def Start_CC(self):
+        global BCC_Is_Running,BCC_PID,BCC_P
+        if BCC_Is_Running :
+            Kill_BCC()
+            print("Control center is running, will restart")
+            Start_CC()
+        else:
+            argument = ""
+            BCC_P = subprocess.Popen(['python3', BCC_F , argument], shell=True)
+            BCC_PID = self.proc.pid
+            BCC_Is_Running=1
+            print("Control center at "+str(BCC_PID))
+def Kill(self):
+        global BCC_Is_Running,BCC_PID,BCC_P,BCC_Kill
+        try:
+            BCC_P.terminate()
+            BCC_PID=''
+            BCC_Kill=0
+            BCC_Is_Running=0
+        except:
+            print("Erro : Failed to kill Camera. Pid",+str(BCC_PID)+sys.exc_info()[0])
+            raise
+            
 def callback(data):
     data=data.data.split(';;')
     try:
@@ -236,13 +267,19 @@ def main():
         elif args.type[2]=="1":
             bfps=FPS()
             bfps.Start()
+        elif args.type[3]=="1":
+            bfps=FPS()
+            bfps.Start()
         else:
             pass
+        listener()
     except:
         U_Sender("Erro :",sys.exc_info()[0])
         raise
     
-    listener() 
+if __name__ == '__main__':
+    main()
+     
     
         
 camera.Kill()
