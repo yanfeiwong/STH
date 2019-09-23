@@ -1,3 +1,4 @@
+###############Start roscore by Python script####################
 import subprocess
 import shlex
 import sys
