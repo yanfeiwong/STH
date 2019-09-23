@@ -1,3 +1,4 @@
+####Optocoupler speed measurement####
 import RPi.GPIO as GPIO
 import time,rospy
 from std_msgs.msg import String
