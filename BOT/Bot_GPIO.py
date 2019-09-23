@@ -1,3 +1,4 @@
+############Bot's GPIO#########
 import RPi.GPIO as GPIO
 import time
 IN1 = 12
