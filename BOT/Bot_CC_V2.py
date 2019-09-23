@@ -273,7 +273,7 @@ if __name__ == '__main__':
         time.sleep(3)
         Bot_CC()
         roscore.terminate()
-        U_Sender("Control center OUT！")
+        U_Sender("Control center OUT")
         exit(0)
     except:
         U_Sender("Erro : Control center OUT！",sys.exc_info()[0])
