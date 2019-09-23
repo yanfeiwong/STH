@@ -19,7 +19,6 @@ S_host  = '192.168.31.119'
 S_port = 9999
 S_bufsize = 1024
 r_addr = (host,port)
-
 udpServer = socket(AF_INET,SOCK_DGRAM)
 udpClient.sendto(data,addr)
 udpServer.bind(addr)
