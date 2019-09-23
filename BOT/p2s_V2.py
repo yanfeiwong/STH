@@ -1,3 +1,4 @@
+####Cmaera/Image live stream management####
 import math,time,sys,argparse
 from time import sleep
 from picamera import PiCamera
