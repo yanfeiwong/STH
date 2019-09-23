@@ -5,7 +5,7 @@ from std_msgs.msg import String
 
 Rate=60
 
-L_P=23
+L_P=24
 R_p=26
 L_Stat=0
 R_Stat=0
